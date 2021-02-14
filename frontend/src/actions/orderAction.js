@@ -11,7 +11,13 @@ import {
     ORDER_PAY_REQUEST,
     ORDER_LIST_MY_REQUEST,
     ORDER_LIST_MY_SUCCESS,
-    ORDER_LIST_MY_FAIL
+    ORDER_LIST_MY_FAIL,
+    LIST_ORDERS_REQUEST,
+    LIST_ORDERS_SUCCESS,
+    LIST_ORDERS_FAIL,
+    ORDER_DELIVER_REQUEST,
+    ORDER_DELIVER_SUCCESS,
+    ORDER_DELIVER_FAIL
 } from '../constants/orderConstant'
 
 
@@ -96,6 +102,32 @@ export const payOrder = (orderId, paymentResult) => async(dispatch, getState) =>
 }
 
 
+export const deliverOrder = (order) => async(dispatch, getState) =>{
+    try {
+        dispatch({
+            type: ORDER_DELIVER_REQUEST
+        })
+
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        const { data } = await axios.put(`/api/orders/${order._id}/deliver`, {}, config)
+
+        dispatch({
+            type: ORDER_DELIVER_SUCCESS,
+            payload: data
+        })
+    } catch (error) {
+        dispatch({ type: ORDER_DELIVER_FAIL, payload: error.response && error.response.data.message ? error.response.data.message : error.message })   
+    }
+}
+
+
 
 
 export const listMyOrders = () => async(dispatch, getState) =>{
@@ -107,7 +139,6 @@ export const listMyOrders = () => async(dispatch, getState) =>{
         const { userLogin: { userInfo } } = getState()
 
         const config = {
-            'Content-Type': 'application/json',
             headers: {
                 Authorization: `Bearer ${userInfo.token}`
             }
@@ -121,5 +152,31 @@ export const listMyOrders = () => async(dispatch, getState) =>{
         })
     } catch (error) {
         dispatch({ type: ORDER_LIST_MY_FAIL, payload: error.response && error.response.data.message ? error.response.data.message : error.message })   
+    }
+}
+
+
+export const listOrders = () => async(dispatch, getState) =>{
+    try {
+        dispatch({
+            type: LIST_ORDERS_REQUEST
+        })
+
+        const { userLogin: { userInfo } } = getState()
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        const { data } = await axios.get('/api/orders', config)
+
+        dispatch({
+            type: LIST_ORDERS_SUCCESS,
+            payload: data
+        })
+    } catch (error) {
+        dispatch({ type: LIST_ORDERS_FAIL, payload: error.response && error.response.data.message ? error.response.data.message : error.message })   
     }
 }
