@@ -20,6 +20,8 @@ import {
     ORDER_DELIVER_FAIL
 } from '../constants/orderConstant'
 
+import { CART_CLEAR_ITEMS } from '../constants/cartConstant'
+
 
 
 export const createOrder = (order) => async(dispatch, getState) =>{
@@ -43,6 +45,14 @@ export const createOrder = (order) => async(dispatch, getState) =>{
             type: ORDER_CREATE_SUCCESS,
             payload: data
         })
+
+
+        dispatch({
+            type: CART_CLEAR_ITEMS,
+          })
+
+          localStorage.removeItem('cartItems')
+        
     } catch (error) {
         dispatch({ type: ORDER_CREATE_FAIL, payload: error.response && error.response.data.message ? error.response.data.message : error.message })   
     }
